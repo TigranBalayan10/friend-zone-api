@@ -20,7 +20,7 @@ const UserSchema = new Schema(
     thoughts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Thoughts",
+        ref: "Thought",
       },
     ],
     friends: [
@@ -41,9 +41,9 @@ const UserSchema = new Schema(
 );
 
 // get total count of friends on retrieval
-PizzaSchema.virtual("friendCount").get(function () {
-  return this.comments.reduce(
-    (total, comment) => total + comment.replies.length + 1,
+UserSchema.virtual("friendCount").get(function () {
+  return this.friends.reduce(
+    (total, friend) => total + friend.length + 1,
     0
   );
 });
