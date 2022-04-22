@@ -1,34 +1,32 @@
 const { Schema, model } = require("mongoose");
 const dateFormat = require("../utils/dateFormat");
 
-const PizzaSchema = new Schema(
+const UserSchema = new Schema(
   {
-    pizzaName: {
+    username: {
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
-    createdBy: {
+    email: {
       type: String,
       required: true,
-      trim: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      get: (createdAtVal) => dateFormat(createdAtVal),
-    },
-    size: {
-      type: String,
-      required: true,
-      enum: ["Personal", "Medium", "Large", "Extra Large"],
-      default: "Large"
-    },
-    toppings: [],
-    comments: [
+    thoughts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Comment",
+        ref: "Thoughts",
+      },
+    ],
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
   },
@@ -42,14 +40,14 @@ const PizzaSchema = new Schema(
   }
 );
 
-// get total count of comments and replies on retrieval
-PizzaSchema.virtual("commentCount").get(function () {
+// get total count of friends on retrieval
+PizzaSchema.virtual("friendCount").get(function () {
   return this.comments.reduce(
     (total, comment) => total + comment.replies.length + 1,
     0
   );
 });
 
-const Pizza = model("Pizza", PizzaSchema);
+const User = model("User", UserSchema);
 
-module.exports = Pizza;
+module.exports = User;
